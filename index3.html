@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Registrasi dan List Pendaftar</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <ul class="nav nav-tabs" id="myTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#registrasi">Registrasi</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#list-pendaftar">List Pendaftar</a>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+            <div id="registrasi" class="tab-pane active">
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="nama">Nama (minimal 10 karakter):</label>
+                        <input type="text" class="form-control" id="nama" name="nama" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="umur">Umur (minimal 25 tahun):</label>
+                        <input type="number" class="form-control" id="umur" name="umur" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="uangsangu">Uang Sangu (minimal 100 ribu dan maksimal 1 juta):</label>
+                        <input type="number" class="form-control" id="uangsangu" name="uangsangu" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div id="list-pendaftar" class="tab-pane">
+                <p>Rata-rata pendaftar memiliki uang sangu sebesar <span id="avgUangSangu">0</span> dengan rata-rata umur <span id="avgUmur">0</span></p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Umur</th>
+                            <th>Uang Sangu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendaftarTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const registrationForm = document.getElementById('registrationForm');
+        const pendaftarTable = document.getElementById('pendaftarTable');
+        const avgUangSanguSpan = document.getElementById('avgUangSangu');
+        const avgUmurSpan = document.getElementById('avgUmur');
+
+        let pendaftarData = [];
+        
+        registrationForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            
+            const nama = document.getElementById('nama').value;
+            const umur = parseInt(document.getElementById('umur').value);
+            const uangsangu = parseInt(document.getElementById('uangsangu').value);
+            
+            if (nama.length < 10 || umur < 25 || uangsangu < 100000 || uangsangu > 1000000) {
+                alert('Data tidak memenuhi kriteria.');
+                return;
+            }
+            
+            pendaftarData.push({ nama, umur, uangsangu });
+            
+            // Update table
+            updatePendaftarTable();
+            
+            // Update average values
+            updateAverageValues();
+            
+            // Clear the form
+            registrationForm.reset();
+        });
+
+        function updatePendaftarTable() {
+            pendaftarTable.innerHTML = '';
+            for (const data of pendaftarData) {
+                const row = pendaftarTable.insertRow();
+                const cellNama = row.insertCell(0);
+                const cellUmur = row.insertCell(1);
+                const cellUangSangu = row.insertCell(2);
+
+                cellNama.innerHTML = data.nama;
+                cellUmur.innerHTML = data.umur;
+                cellUangSangu.innerHTML = data.uangsangu;
+            }
+        }
+
+        function updateAverageValues() {
+            if (pendaftarData.length === 0) {
+                avgUangSanguSpan.textContent = '0';
+                avgUmurSpan.textContent = '0';
+                return;
+            }
+
+            let totalUangSangu = 0;
+            let totalUmur = 0;
+
+            for (const data of pendaftarData) {
+                totalUangSangu += data.uangsangu;
+                totalUmur += data.umur;
+            }
+
+            const avgUangSangu = totalUangSangu / pendaftarData.length;
+            const avgUmur = totalUmur / pendaftarData.length;
+
+            avgUangSanguSpan.textContent = avgUangSangu.toFixed(2);
+            avgUmurSpan.textContent = avgUmur.toFixed(2);
+        }
+    </script>
+</body>
+</html>
